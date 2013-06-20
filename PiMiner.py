@@ -17,18 +17,18 @@ pDisplay.dispLocalInfo()
 
 # Listen for button presses
 while True:
-  b = lcd.buttons()
+	b = lcd.buttons()
 	if b is not prev:
 		if lcd.buttonPressed(lcd.SELECT):
 			pDisplay.backlightStep()
-        	elif lcd.buttonPressed(lcd.LEFT):
+		elif lcd.buttonPressed(lcd.LEFT):
 	  		pDisplay.scrollRight()
-        	elif lcd.buttonPressed(lcd.RIGHT):
-          		pDisplay.scrollLeft()
+		elif lcd.buttonPressed(lcd.RIGHT):
+			pDisplay.scrollLeft()
 		elif lcd.buttonPressed(lcd.UP):
-                        pDisplay.modeUp()
+			pDisplay.modeUp()
 		elif lcd.buttonPressed(lcd.DOWN):
-                        pDisplay.modeDown()
+			pDisplay.modeDown()
 		prev = b
 		lastTime = time()
 	else:
