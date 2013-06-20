@@ -23,6 +23,12 @@ class PiMinerInfo:
 	def __init__(self):
 	  self.host = self.get_ipaddress()
 	  self.refresh()
+	  
+	def reportError(self, s):
+		self.screen1 = [s, s]
+		self.screen2 = [s, s]
+		self.screen3 = [s, s]
+		self.screen4 = [s, s]
 	
 	def value_split(self, s):
 	  r = s.split('=')
@@ -36,7 +42,7 @@ class PiMinerInfo:
 		d = dict(map(self.value_split, r[1:]))
 		return title, d
 	  except ValueError:
-		print s
+		self.reportError('value error')
 	
 	def get_ipaddress(self):
 		arg = 'ip route list'
@@ -64,8 +70,9 @@ class PiMinerInfo:
 		data = s.recv(8192)
 		s.close()
 	  except Exception as e:
-		print str(e)
-		data = ''
+		self.reportError(e)
+		return 
+		#data = ''
 	  if data:
 		d = data.strip('\x00|').split('|')
 		return map(self.response_split, d)
@@ -92,7 +99,10 @@ class PiMinerInfo:
 		self.uptime = self.parse_time(int(d['Elapsed']))
 		self.accepted = float(d['Accepted'])
 		self.hw = float(d['Rejected'])
-		self.errRate = self.hw / self.accepted * 100.0
+		try:
+			self.errRate = self.hw / self.accepted * 100.0
+		except Exception as e:
+			self.errRate = 0.0
 		s1 = 'A:%s R:%s H:%s' % (d['Accepted'], d['Rejected'], d['Hardware Errors'])
 		s2 = 'avg:%s' % self.hashrate(float(d['MHS av']))
 		return [s1, s2]
@@ -103,7 +113,7 @@ class PiMinerInfo:
 		if isinstance(p, (tuple, list, )):
 			try:
 				pd = dict(p)
-			except TypeError: # not able to convert
+			except TypeError:
 	  			pd = zip(p, range(len(p)))
 			return pd
   		if isinstance(p, dict): return p
