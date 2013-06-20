@@ -98,7 +98,7 @@ class PiMinerInfo:
 		d = r[1][1]
 		self.uptime = self.parse_time(int(d['Elapsed']))
 		self.accepted = float(d['Accepted'])
-		self.hw = float(d['Rejected'])
+		self.hw = float(d['Hardware Errors'])
 		try:
 			self.errRate = self.hw / self.accepted * 100.0
 		except Exception as e:
