@@ -1,5 +1,8 @@
 #!/usr/bin/python
 
+#Portions of this file use code from fcicq's cgmonitor.py:
+#https://gist.github.com/fcicq/4975730
+
 import subprocess
 import socket
 import time
