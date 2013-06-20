@@ -4,7 +4,7 @@ from PiMinerInfo import PiMinerInfo
 from Adafruit_CharLCDPlate import Adafruit_CharLCDPlate
 
 class PiMinerDisplay:
-  
+	
 	col = []	
 	prevCol = 0  
 	lcd = Adafruit_CharLCDPlate()
@@ -26,21 +26,30 @@ class PiMinerDisplay:
 	def dispLocalInfo(self):
 		self.dispScreen(self.info.screen1)
 
-	#Display Secondary info 1 - Pool Name \n Remote hashrate
+	#Display Pool Name \n Remote hashrate
 	def dispPoolInfo(self):
 		self.dispScreen(self.info.screen2)
 
-	#Display Secondary info 2 - Rewards (confirmed + unconfirmed) \n Current Hash
+	#Display Rewards (confirmed + unconfirmed) \n Current Hash
 	def dispRewardsInfo(self):
         	self.dispScreen(self.info.screen3)
+
+	#Display Error rate & Uptime
+	def dispUptimeInfo(self):
+        	self.dispScreen(self.info.screen4)
 	
 	#Send text to display
 	def dispScreen(self, newScreen):
 		self.screen = newScreen
-		self.maxOffset = max((len(self.screen[0]) - 16), (len(self.screen[1]) - 16))
-		self.lcd.clear()
-                s = self.screen[0] + '\n' + self.screen[1]
-                self.lcd.message(s)
+		try:
+			self.maxOffset = max((len(self.screen[0]) - 16), (len(self.screen[1]) - 16))
+			self.lcd.clear()
+			s = self.screen[0] + '\n' + self.screen[1]
+			self.lcd.message(s)
+		except TypeError:
+			self.lcd.clear()
+			self.lcd.message('connection\nlost')
+        	
 
 	#Cycle Backlight Color / On/Off
 	def backlightStep(self):
@@ -61,12 +70,12 @@ class PiMinerDisplay:
 		
 	def modeUp(self):
 		self.mode += 1
-		if self.mode > 2: self.mode = 0
+		if self.mode > 3: self.mode = 0
 		self.update()
 
 	def modeDown(self):
 		self.mode -= 1
-                if self.mode < 0: self.mode = 2
+                if self.mode < 0: self.mode = 3
                 self.update()
 
 	def update(self):
@@ -74,4 +83,4 @@ class PiMinerDisplay:
                 if self.mode == 0: self.dispPoolInfo()
                 elif self.mode == 1: self.dispLocalInfo()
                 elif self.mode == 2: self.dispRewardsInfo()
-		
+                elif self.mode == 3: self.dispUptimeInfo()
