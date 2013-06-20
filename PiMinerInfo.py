@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-#Portions of this file use code from fcicq's cgmonitor.py:
+#This file uses code from fcicq's cgmonitor.py:
 #https://gist.github.com/fcicq/4975730
 
 import subprocess
@@ -11,6 +11,10 @@ class PiMinerInfo:
 	
 	host = ''
 	port = 4028
+	errRate = 0.0
+	accepted = 0.0
+	hw = 0.0
+	uptime = ''
 	screen1 = ['no data','no data']
 	screen2 = ['no data','no data']
 	screen3 = ['no data','no data']
@@ -41,6 +45,15 @@ class PiMinerInfo:
 		split_data = data[0].split()
 		self.ipaddr = split_data[split_data.index('src')+1]
 		return self.ipaddr
+	
+	def parse_time(self, t):
+		r = []
+		m = t // 60
+		if t >= 86400:
+			r.append('%d day' % (t // 86400))
+			t = t % 86400
+		r.append('%02d:%02d:%02d' % (t // 3600, (t % 3600) // 60, t % 60))
+		return ' '.join(r)
 	
 	def cg_rpc(self, host, port, command):
 	  try:
@@ -76,6 +89,10 @@ class PiMinerInfo:
 		if not r[0][0] == 'STATUS=S' and r[1][0] == 'SUMMARY':
 		  return
 		d = r[1][1]
+		self.uptime = self.parse_time(int(d['Elapsed']))
+		self.accepted = float(d['Accepted'])
+		self.hw = float(d['Rejected'])
+		self.errRate = self.hw / self.accepted * 100.0
 		s1 = 'A:%s R:%s H:%s' % (d['Accepted'], d['Rejected'], d['Hardware Errors'])
 		s2 = 'avg:%s' % self.hashrate(float(d['MHS av']))
 		return [s1, s2]
@@ -117,7 +134,7 @@ class PiMinerInfo:
 			if not r[0][0] == 'STATUS=S': return
 			if not r[1][0] == 'CONFIG': return
 			d = r[1][1]
-			return 'Devices: %s' % (int(d.get('GPU Count','0')) + int(d.get('PGA Count','0')) + int(d.get('ASC Count','0')))
+			return 'devcs: %s' % (int(d.get('GPU Count','0')) + int(d.get('PGA Count','0')) + int(d.get('ASC Count','0')))
 		except Exception as e:
 			return str(e)
 
@@ -125,19 +142,22 @@ class PiMinerInfo:
 		if not isinstance(r, (list, tuple)): return
 		try:
 			d = r[1][1]
-			return 'Diff:%.0f' % float(d['Network Difficulty'])
+			return 'diff: %.2fm' % (float(d['Network Difficulty']) / 1000000.0)
 		except Exception as e:
 			return str(e)
 	
 	def refresh(self):
-		#Screen 1 data
+		
 		s = self.cg_rpc(self.host, self.port, 'summary')
 		self.screen1 = self.parse_summary(s)
-		#Screen 3 data
+		
 		s = self.cg_rpc(self.host, self.port, 'pools')
 		self.screen3 = self.parse_pools(s)
-		#Screen 2 data
+		
 		s = self.cg_rpc(self.host, self.port, 'config')
 		self.screen2[0] = self.parse_config(s)
 		s = self.cg_rpc(self.host, self.port, 'coin')
-		self.screen2[1] = self.parse_coin(s)	
+		self.screen4[1] = self.parse_coin(s)
+		
+		self.screen4[0] = 'time: %s' % self.uptime
+		self.screen2[1] = 'error: %.2f%%' % self.errRate
