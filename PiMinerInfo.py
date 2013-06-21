@@ -1,7 +1,8 @@
 #!/usr/bin/python
 
-#This file uses code from fcicq's cgmonitor.py:
+#This file uses code from fcicq's cgmonitor.py released under GPLv3:
 #https://gist.github.com/fcicq/4975730
+#for details see LICENSE.txt
 
 import subprocess
 import socket
