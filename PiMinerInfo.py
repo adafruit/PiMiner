@@ -51,6 +51,8 @@ class PiMinerInfo:
 		data = p.communicate()
 		split_data = data[0].split()
 		self.ipaddr = split_data[split_data.index('src')+1]
+		s = '%s' % self.ipaddr
+		self.reportError(s)
 		return self.ipaddr
 	
 	def parse_time(self, t):
@@ -72,8 +74,7 @@ class PiMinerInfo:
 		s.close()
 	  except Exception as e:
 		self.reportError(e)
-		return 
-		#data = ''
+		return
 	  if data:
 		d = data.strip('\x00|').split('|')
 		return map(self.response_split, d)
@@ -161,7 +162,7 @@ class PiMinerInfo:
 		
 		s = self.cg_rpc(self.host, self.port, 'summary')
 		self.screen1 = self.parse_summary(s)
-		
+
 		s = self.cg_rpc(self.host, self.port, 'pools')
 		self.screen3 = self.parse_pools(s)
 		
