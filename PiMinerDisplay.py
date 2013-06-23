@@ -48,7 +48,7 @@ class PiMinerDisplay:
 			self.lcd.message(s)
 		except TypeError:
 			self.lcd.clear()
-			self.lcd.message('connection\nlost')
+			self.lcd.message('no connection\nto cgminer')
         	
 
 	#Cycle Backlight Color / On/Off
