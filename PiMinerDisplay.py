@@ -8,7 +8,7 @@ class PiMinerDisplay:
 	col = []	
 	prevCol = 0  
 	lcd = Adafruit_CharLCDPlate()
-	info = PiMinerInfo()
+	info = None
 	mode = 1
 	offset = 0
 	maxOffset = 0
@@ -21,6 +21,11 @@ class PiMinerDisplay:
         	        self.lcd.BLUE,  self.lcd.OFF, self.lcd.VIOLET, self.lcd.OFF,
                 	self.lcd.RED,    self.lcd.OFF)
 		self.lcd.backlight(self.col[self.prevCol])
+	
+	#Show initial info (call after network connected)
+	def initInfo(self):
+		self.info = PiMinerInfo()
+		self.dispLocalInfo()
 		
 	#Display Local Info - Accepted, Rejected, HW Errors \n Average Hashrate
 	def dispLocalInfo(self):
@@ -37,6 +42,10 @@ class PiMinerDisplay:
 	#Display Error rate & Uptime
 	def dispUptimeInfo(self):
         	self.dispScreen(self.info.screen4)
+        	
+    #Display rewards & price
+	def dispValueInfo(self):
+        	self.dispScreen(self.info.screen5)
 	
 	#Send text to display
 	def dispScreen(self, newScreen):
@@ -48,7 +57,7 @@ class PiMinerDisplay:
 			self.lcd.message(s)
 		except TypeError:
 			self.lcd.clear()
-			self.lcd.message('no connection\nto cgminer')
+			self.lcd.message('connecting\nto cgminer ...')
         	
 
 	#Cycle Backlight Color / On/Off
@@ -58,29 +67,35 @@ class PiMinerDisplay:
           	self.lcd.backlight(self.col[newCol])
           	self.prevCol = newCol
 	
+	#Offset text to the right
 	def scrollLeft(self):
 		if self.offset >= self.maxOffset: return
 		self.lcd.scrollDisplayLeft()
 		self.offset += 1
-
+	
+	#Offset text to the left
 	def scrollRight(self):
 		if self.offset <= 0: return
 		self.lcd.scrollDisplayRight()
 		self.offset -= 1
-		
+	
+	#Display next info screen
 	def modeUp(self):
 		self.mode += 1
-		if self.mode > 3: self.mode = 0
+		if self.mode > 4: self.mode = 0
 		self.update()
-
+	
+	#Display previous info screen
 	def modeDown(self):
 		self.mode -= 1
-                if self.mode < 0: self.mode = 3
+                if self.mode < 0: self.mode = 4
                 self.update()
-
+	
+	#Update display
 	def update(self):
 		self.info.refresh()
                 if self.mode == 0: self.dispPoolInfo()
                 elif self.mode == 1: self.dispLocalInfo()
                 elif self.mode == 2: self.dispRewardsInfo()
                 elif self.mode == 3: self.dispUptimeInfo()
+                elif self.mode == 4: self.dispValueInfo()
