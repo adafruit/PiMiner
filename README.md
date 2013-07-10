@@ -15,7 +15,6 @@ To download, log into your Pi with Internet accessibility and type: git clone ht
 
 
 Changes
-=======
 
 Version 1.1
 - Added mining auto-start after boot (see tutorial)
