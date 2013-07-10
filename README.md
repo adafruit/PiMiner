@@ -15,6 +15,7 @@ To download, log into your Pi with Internet accessibility and type: git clone ht
 
 
 Changes
+-------------
 
 Version 1.1
 - Added mining auto-start after boot (see tutorial)
@@ -23,6 +24,7 @@ Version 1.1
 - Revised error % calculation: 100 * HW / (diff1shares + HW)
 - Added MtGox last, high, & low price ("currency" var can be set in script)
 - Misc. tutorial revisions
+
 
 Version 1.0
 - Initial release
