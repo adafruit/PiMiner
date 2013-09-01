@@ -139,10 +139,10 @@ class PiMinerInfo:
 			self.errRate = 100.0 * self.hw / (self.diff1shares + self.hw)
 		except Exception as e:
 			self.errRate = 0.0
-		acc = self.abbrev(d['Accepted'])
+		acc = d['Accepted']
 		rej = self.abbrev(d['Rejected'])
 		hw = self.abbrev(d['Hardware Errors'])
-		s1 = 'A:%s R:%s H:%s' % (acc, rej, hw)
+		s1 = 'A%s R%s H%s' % (acc, rej, hw)
 		s2 = 'avg:%s' % self.hashrate(float(d['MHS av']))
 		return [s1, s2]
 	  except Exception as e:
