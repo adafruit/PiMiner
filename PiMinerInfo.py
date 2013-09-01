@@ -26,6 +26,9 @@ class PiMinerInfo:
 	screen4 	= ['no data','no data']
 	screen5 	= ['no data','no data']
 	currency 	= 'USD' 				#USD GBP EUR JPY AUD CAD CHF CNY DKK HKD PLN RUB SEK SGD THB NOK CZK
+	mkt_data	= 'bitstamp'			#mtgox has big deviations from other exchanges so configuring for bitstamp
+										#which only supports USD so far. Change to '' if you want other currency or
+										#fallback to goxbux
 	dollars 	= ['USD', 'AUD', 'CAD']	#currencies with displayable symbols
 	lastCheck 	= time.time()			#time of last price check
 	priceWait 	= 60.0					#interval between price checks
@@ -196,26 +199,43 @@ class PiMinerInfo:
 	def checkPrice(self):
 		try:
 			url = 'https://data.mtgox.com/api/2/BTC***/money/ticker'.replace('***', self.currency)
+			if self.mkt_data == 'bitstamp':
+				url = 'https://www.bitstamp.net/api/ticker'
+				
 			f = urllib.urlopen(url)
 		except Exception as e:
 			self.reportError(e)
 			return None
 		data = None
+		price_high = None
+		price_low = None
+		price_last = None
+
 		if f:
 			pricesData = f.read()
 			prices_json = json.loads(pricesData)
-			if prices_json and prices_json['result'] == 'success':
-				data = prices_json['data']
-		
-		#dollar symbol currencies
-		if self.currency in self.dollars:
+			if prices_json and self.mkt_data == 'bitstamp':
+				price_high = prices_json['high']
+				price_last = prices_json['last']
+				price_low = prices_json['low']
+			else:
+				if prices_json and prices_json['result'] == 'success':
+					data = prices_json['data']
+
+		#bitstamp currently only returns USD$
+		if self.mkt_data == 'bitstamp':
+			self.priceLast = '$' + price_last if price_last else '-'
+			self.priceLo = price_low if price_low else '-'
+			self.priceHi = price_high if price_high else '-'
+
+		#assumes original mtgox configuration with USD
+		elif self.currency in self.dollars:
 			self.priceLast = data['last']['display_short'] if data else '-'
 			self.priceLo = data['low']['display_short'] if data else '-'
 			a, self.priceLo = self.priceLo.split('$')
 			self.priceHi = data['high']['display_short'] if data else '-'
 			a, self.priceHi = self.priceHi.split('$')
-		
-		#non-compatible symbol currencies
+		#non-compatible symbol currencies, assumes mtgox
 		else:
 			self.priceLast = ('%.2f ' % float(data['last']['value']) if data else '-') + self.currency
 			self.priceLo = '%.2f' % float(data['low']['value']) if data else '-'
