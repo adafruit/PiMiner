@@ -105,7 +105,7 @@ class PiMinerInfo:
 	  elif h >= 1000000.0:
 		u = 'Th/s'
 		h = h / 1000000.0
-	  s = '%s %s' % (h, u)
+	  s = '%s %s' % ("{0:.5f}".format(h), u)
 	  return s
 	  
 	def abbrev(self, v):
