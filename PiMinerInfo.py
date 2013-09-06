@@ -213,7 +213,11 @@ class PiMinerInfo:
 
 		if f:
 			pricesData = f.read()
-			prices_json = json.loads(pricesData)
+			try:
+				prices_json = json.loads(pricesData)
+			except ValueError:
+				return None
+				
 			if prices_json and self.mkt_data == 'bitstamp':
 				price_high = prices_json['high']
 				price_last = prices_json['last']
