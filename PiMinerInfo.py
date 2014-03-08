@@ -200,7 +200,7 @@ class PiMinerInfo:
 		try:
 			url = 'https://data.mtgox.com/api/2/BTC***/money/ticker'.replace('***', self.currency)
 			if self.mkt_data == 'bitstamp':
-				url = 'https://www.bitstamp.net/api/ticker'
+				url = 'https://www.bitstamp.net/api/ticker/'
 				
 			f = urllib.urlopen(url)
 		except Exception as e:
