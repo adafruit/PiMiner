@@ -17,6 +17,10 @@ To download, log into your Pi with Internet accessibility and type: git clone ht
 Changes
 -------------
 
+Version 1.1.1 (forked by denmojo)
+- Added support for bitstamp exchange rates (less price deviation than mtgox) in screen selection 3.
+- Retained compatibility with mtgox.
+
 Version 1.1
 - Added mining auto-start after boot (see tutorial)
 - Time format changed to dd:hh:mm
