@@ -1,3 +1,5 @@
+NOTE - this project is for historical reference only. The bitcoin mining process has changed considerably since this guide written and project code will need to be overhauled before use.
+
 PiMiner v1.1
 =======
 
